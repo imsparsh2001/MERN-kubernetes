@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: backend-deployment
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -13,7 +13,24 @@ spec:
         app: backend
     spec:
       containers:
-      - name: backend
-        image: mernk8s.azurecr.io/mern-backend:v1
-        ports:
-        - containerPort: 5050
+        - name: backend
+          image: mernk8s.azurecr.io/mern-backend:v1
+          ports:
+            - containerPort: 5050
+          env:
+            
+            - name: MONGO_URI
+              value: mongodb://mongodb:27017/mydatabase
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - name: http
+      port: 5050
+      targetPort: 5050
