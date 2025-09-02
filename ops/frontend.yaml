@@ -1,7 +1,9 @@
+# k8s/10-frontend.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend-deployment
+  namespace: mern
 spec:
   replicas: 1
   selector:
@@ -18,19 +20,19 @@ spec:
           ports:
             - containerPort: 5173
           env:
-           
             - name: REACT_APP_API_URL
-              value: http://backend-service:5050
+              value: http://backend-service.mern.svc.cluster.local:5050
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
+  namespace: mern
 spec:
-  type: ClusterIP
   selector:
     app: frontend
   ports:
     - name: http
-      port: 5173
-      targetPort: 5173
+      port: 80           # expose as 80 inside cluster
+      targetPort: 5173   # container listens on 5173
+  type: ClusterIP
