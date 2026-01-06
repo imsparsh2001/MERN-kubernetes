@@ -1,14 +1,17 @@
 name: CI Pipeline
 
 on:
-  push:
-    branches: [ master, develop ]
-  pull_request:
+  workflow_run:
+    workflows: ["SonarQube Scan"]
+    types:
+      - completed
     branches: [ master, develop ]
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    # Only run if sonar scan succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     env:
       DOCKER_USER: ${{ secrets.DOCKER_HUB_USERNAME }}
